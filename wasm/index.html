@@ -5,30 +5,44 @@
 </head>
 
 <body>
+  <div>
+    <textarea id="input" cols="80" rows="30">
+(defun null (x)
+    (eq x '()))
+(defun append (x y)
+  (cond ((null x) y)
+    ('t (cons (car x) (append (cdr x) y)))))
+(append '(1 2 3) '(4 5 6))
+    </textarea>
+    <button id="eval">eval</button>
+  </div>
+  <style>
+    #input,
+    #output {
+      font-family: monospace;
+    }
+  </style>
+  <pre id="output"></pre>
   <script type="module">
-    import init, { lisp_root_read_eval } from './pkg/lisp_roots_wasm.js';
+    import init, { lisp_root_read_eval } from './pkg/lisp_roots_wasm.js'
+    await init()
 
-    async function run() {
-      await init();
+    const input = document.querySelector("#input")
+    const btn = document.querySelector("#eval")
+    const output = document.querySelector("#output")
 
-      let src = `
-        (defun null (x)
-          (eq x '()))
-        (defun append (x y)
-          (cond ((null x) y)
-            ('t (cons (car x) (append (cdr x) y)))))
-        (append '(1 2 3) '(4 5 6))
-      `
+    const run = () => {
+      let src = input.value
 
       try {
-        let result = lisp_root_read_eval(src);
-        alert(result);
+        let result = lisp_root_read_eval(src)
+        output.innerHTML = result
       } catch (e) {
-        alert(e);
+        output.innerHTML = e
       }
     }
 
-    run();
+    btn.addEventListener("click", run)
   </script>
 </body>
 
