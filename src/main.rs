@@ -3,6 +3,21 @@ use std::{env::args, fs};
 use lisp_roots::{env::Env, expr::Expr, read::read};
 use rustyline::{DefaultEditor, Result};
 
+fn eval_exprs(xs: &[Expr], env: &mut Env) {
+    for x in xs {
+        match x.eval(env) {
+            Ok(ok) => {
+                if ok != Expr::new_nil() {
+                    println!("{}", ok);
+                }
+            }
+            Err(err) => {
+                eprintln!("{}", err);
+            }
+        }
+    }
+}
+
 fn repl() -> Result<()> {
     let mut rl = DefaultEditor::new()?;
     let mut env = Env::new_global();
@@ -10,21 +25,10 @@ fn repl() -> Result<()> {
     loop {
         let readline = rl.readline(">> ");
         match readline {
-            Ok(line) => {
-                let xs: Vec<Expr> = read(line).unwrap();
-                for x in xs {
-                    match x.eval(&mut env) {
-                        Ok(ok) => {
-                            if ok != Expr::new_nil() {
-                                println!("{}", ok);
-                            }
-                        }
-                        Err(err) => {
-                            eprintln!("{}", err);
-                        }
-                    }
-                }
-            }
+            Ok(line) => match read(line) {
+                Ok(ok) => eval_exprs(&ok, &mut env),
+                Err(err) => eprintln!("{}", err),
+            },
             Err(err) => {
                 println!("Error: {:?}", err);
                 break;
@@ -41,7 +45,7 @@ fn main() {
         let _ = repl();
     } else {
         let src = fs::read_to_string(args[1].clone()).unwrap();
-        let xs = read(src.to_string()).unwrap();
+        let xs = read(src).unwrap();
         let mut env = Env::new_global();
         for x in xs {
             let result = x.eval(&mut env).unwrap();

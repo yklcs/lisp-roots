@@ -21,18 +21,14 @@ fn check_args_count(expected: usize, got: usize) -> Result<(), Error> {
 
 /* Special forms */
 
-pub(crate) fn quote(cdr: List, env: &mut Env) -> Result<Expr, Error> {
-    if let Err(e) = check_args_count(1, cdr.len()) {
-        return Err(e);
-    }
+pub(crate) fn quote(cdr: List, _env: &mut Env) -> Result<Expr, Error> {
+    check_args_count(1, cdr.len())?;
 
     Ok(cdr.car().clone())
 }
 
 fn cond_branch(cdr: List, env: &mut Env) -> Result<Option<Expr>, Error> {
-    if let Err(e) = check_args_count(2, cdr.len()) {
-        return Err(e);
-    }
+    check_args_count(2, cdr.len())?;
 
     let condition = cdr.car().clone().eval(env)?;
     if condition == Expr::from("t") {
@@ -62,13 +58,11 @@ pub(crate) fn cond(cdr: List, env: &mut Env) -> Result<Expr, Error> {
         }
     }
 
-    return Err(Error::EvalError("cond does not match".to_string()));
+    Err(Error::EvalError("cond does not match".to_string()))
 }
 
 pub(crate) fn lambda(cdr: List, env: &Env) -> Result<Expr, Error> {
-    if let Err(e) = check_args_count(2, cdr.len()) {
-        return Err(e);
-    }
+    check_args_count(2, cdr.len())?;
 
     let params = cdr.car();
     let body = cdr.cadr();
@@ -80,9 +74,7 @@ pub(crate) fn lambda(cdr: List, env: &Env) -> Result<Expr, Error> {
 }
 
 pub(crate) fn defun(cdr: List, env: &mut Env) -> Result<Expr, Error> {
-    if let Err(e) = check_args_count(3, cdr.len()) {
-        return Err(e);
-    }
+    check_args_count(3, cdr.len())?;
 
     let id = cdr.car().clone();
     let params = cdr.cadr().clone();
@@ -105,9 +97,7 @@ pub(crate) fn defun(cdr: List, env: &mut Env) -> Result<Expr, Error> {
 /* Functions */
 
 pub(crate) fn car(cdr: List, _env: &Env) -> Result<Expr, Error> {
-    if let Err(e) = check_args_count(1, cdr.len()) {
-        return Err(e);
-    }
+    check_args_count(1, cdr.len())?;
 
     if let Expr::List(ls) = cdr.car() {
         Ok(ls.car().clone())
@@ -117,9 +107,7 @@ pub(crate) fn car(cdr: List, _env: &Env) -> Result<Expr, Error> {
 }
 
 pub(crate) fn cdr(cdr: List, _env: &Env) -> Result<Expr, Error> {
-    if let Err(e) = check_args_count(1, cdr.len()) {
-        return Err(e);
-    }
+    check_args_count(1, cdr.len())?;
 
     if let Expr::List(ls) = cdr.car() {
         Ok(Expr::List(ls.cdr()))
@@ -129,9 +117,7 @@ pub(crate) fn cdr(cdr: List, _env: &Env) -> Result<Expr, Error> {
 }
 
 pub(crate) fn atom(cdr: List, _env: &Env) -> Result<Expr, Error> {
-    if let Err(e) = check_args_count(1, cdr.len()) {
-        return Err(e);
-    }
+    check_args_count(1, cdr.len())?;
 
     match cdr.car().clone() {
         Expr::Atom(_) => Ok(Expr::from("t")),
@@ -147,9 +133,7 @@ pub(crate) fn atom(cdr: List, _env: &Env) -> Result<Expr, Error> {
 }
 
 pub(crate) fn eq(cdr: List, _env: &Env) -> Result<Expr, Error> {
-    if let Err(e) = check_args_count(2, cdr.len()) {
-        return Err(e);
-    }
+    check_args_count(2, cdr.len())?;
 
     if cdr.car() == cdr.cadr() {
         Ok(Expr::from("t"))
@@ -159,9 +143,7 @@ pub(crate) fn eq(cdr: List, _env: &Env) -> Result<Expr, Error> {
 }
 
 pub(crate) fn cons(cdr: List, _env: &Env) -> Result<Expr, Error> {
-    if let Err(e) = check_args_count(2, cdr.len()) {
-        return Err(e);
-    }
+    check_args_count(2, cdr.len())?;
 
     let car = cdr.car();
     let cdr = cdr.cadr();

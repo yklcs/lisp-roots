@@ -6,15 +6,15 @@ pub fn read(src: String) -> Result<Vec<Expr>, Error> {
 }
 
 fn tokenize(src: String) -> Vec<String> {
-    src.replace("(", " ( ")
-        .replace(")", " ) ")
-        .replace("'", "' ")
+    src.replace('(', " ( ")
+        .replace(')', " ) ")
+        .replace('\'', "' ")
         .split_whitespace()
         .map(|t| t.to_string())
         .collect()
 }
 
-fn parse(tokens: &Vec<String>) -> Result<Vec<Expr>, Error> {
+fn parse(tokens: &[String]) -> Result<Vec<Expr>, Error> {
     let mut exprs = Vec::new();
     let (mut expr, mut rest) = parse_partial(&Expr::new_nil(), tokens)?;
     exprs.push(expr);
@@ -26,7 +26,7 @@ fn parse(tokens: &Vec<String>) -> Result<Vec<Expr>, Error> {
     Ok(exprs)
 }
 
-fn parse_partial(expr: &Expr, tokens: &Vec<String>) -> Result<(Expr, Vec<String>), Error> {
+fn parse_partial(expr: &Expr, tokens: &[String]) -> Result<(Expr, Vec<String>), Error> {
     let (car, cdr_arr) = tokens
         .split_first()
         .ok_or(Error::ReadError("no tokens to parse".to_string()))?;
@@ -53,6 +53,10 @@ fn parse_partial(expr: &Expr, tokens: &Vec<String>) -> Result<(Expr, Vec<String>
                 let l: Expr;
                 (l, cdr) = parse_partial(expr, &cdr)?;
                 list.push(l);
+
+                if cdr.is_empty() {
+                    return Err(Error::ReadError("unmatched parens".to_string()));
+                }
             }
             let rest = cdr[1..].to_vec();
             Ok((Expr::List(list), rest))

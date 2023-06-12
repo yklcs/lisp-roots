@@ -60,7 +60,7 @@ impl fmt::Display for List {
             if !self.is_empty() {
                 ss.pop();
             }
-            ss = ss + ")";
+            ss += ")";
             write!(f, "{}", ss)
         }
     }

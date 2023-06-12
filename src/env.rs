@@ -44,7 +44,7 @@ impl Env {
         for env in self.scopes.iter().rev() {
             for (key, val) in env {
                 if key == k {
-                    return Some(&val);
+                    return Some(val);
                 }
             }
         }

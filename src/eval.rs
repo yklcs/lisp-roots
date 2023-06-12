@@ -1,9 +1,7 @@
-use std::{fmt::format, primitive};
-
 use crate::{
     env::Env,
     error::Error,
-    expr::{func::Callable, Atom, Expr},
+    expr::{func::Callable, Expr},
     list::List,
     primitives,
 };
@@ -63,7 +61,7 @@ impl Expr {
 
                 // let ls_eval = evlis(ls, env)?;
                 let car_eval = ls.car().eval(env)?;
-                (car_eval.clone(), ls.cdr())
+                (car_eval, ls.cdr())
             }
             _ => return Ok(x),
         };
