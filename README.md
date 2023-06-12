@@ -6,6 +6,16 @@ Implemented in Rust with a simple tree-walking interpreter.
 
 Metacircular evaluation works!
 
+## Usage
+
+```shell
+# repl
+$ lisp-roots
+
+# evaluate file
+$ lisp-roots meta.lisp
+```
+
 ## Primitives
 
 \* denotes special forms.
