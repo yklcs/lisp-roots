@@ -1,0 +1,35 @@
+<html>
+
+<head>
+  <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
+</head>
+
+<body>
+  <script type="module">
+    import init, { lisp_root_read_eval } from './pkg/lisp_roots_wasm.js';
+
+    async function run() {
+      await init();
+
+      let src = `
+        (defun null (x)
+          (eq x '()))
+        (defun append (x y)
+          (cond ((null x) y)
+            ('t (cons (car x) (append (cdr x) y)))))
+        (append '(1 2 3) '(4 5 6))
+      `
+
+      try {
+        let result = lisp_root_read_eval(src);
+        alert(result);
+      } catch (e) {
+        alert(e);
+      }
+    }
+
+    run();
+  </script>
+</body>
+
+</html>
