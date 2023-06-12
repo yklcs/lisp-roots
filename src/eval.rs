@@ -33,10 +33,12 @@ impl Expr {
         println!("{}", self);
 
         let x = match self {
-            Expr::Atom(_) => env
-                .get(self)
-                .ok_or(Error::EvalError(format!("{} does not exist", self)))?
-                .clone(),
+            Expr::Atom(_) => {
+                return Ok(env
+                    .get(self)
+                    .ok_or(Error::EvalError(format!("{} does not exist", self)))?
+                    .clone())
+            }
             Expr::List(ls) => {
                 if let Some(result) = eval_special_form(ls, env) {
                     return result;
