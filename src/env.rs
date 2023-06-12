@@ -31,9 +31,11 @@ impl Env {
     pub fn new_global() -> Self {
         Env {
             scopes: vec![vec![
-                new_primitive_scope_pair("quote", primitives::quote),
-                new_primitive_scope_pair("cond", primitives::cond),
-                new_primitive_scope_pair("lambda", primitives::lambda),
+                new_primitive_scope_pair("car", primitives::car),
+                new_primitive_scope_pair("cdr", primitives::cdr),
+                new_primitive_scope_pair("atom", primitives::atom),
+                new_primitive_scope_pair("eq", primitives::eq),
+                new_primitive_scope_pair("cons", primitives::cons),
             ]],
         }
     }
