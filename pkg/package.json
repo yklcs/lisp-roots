@@ -1,0 +1,14 @@
+{
+  "name": "lisp-roots-wasm",
+  "version": "0.1.0",
+  "files": [
+    "lisp_roots_wasm_bg.wasm",
+    "lisp_roots_wasm.js",
+    "lisp_roots_wasm.d.ts"
+  ],
+  "module": "lisp_roots_wasm.js",
+  "types": "lisp_roots_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}
