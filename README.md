@@ -6,7 +6,7 @@ Implemented in Rust with a simple tree-walking interpreter.
 
 ## Primitives
 
-Dpecial forms.
+\* denotes special forms.
 - `quote`*
 - `atom`
 - `eq`
