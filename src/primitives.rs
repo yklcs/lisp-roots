@@ -21,7 +21,7 @@ fn check_args_count(expected: usize, got: usize) -> Result<(), Error> {
 
 /* Special forms */
 
-pub(crate) fn quote(cdr: List, env: &Env) -> Result<Expr, Error> {
+pub(crate) fn quote(cdr: List, env: &mut Env) -> Result<Expr, Error> {
     if let Err(e) = check_args_count(1, cdr.len()) {
         return Err(e);
     }
@@ -29,7 +29,7 @@ pub(crate) fn quote(cdr: List, env: &Env) -> Result<Expr, Error> {
     Ok(cdr.car().clone())
 }
 
-fn cond_branch(cdr: List, env: &Env) -> Result<Option<Expr>, Error> {
+fn cond_branch(cdr: List, env: &mut Env) -> Result<Option<Expr>, Error> {
     if let Err(e) = check_args_count(2, cdr.len()) {
         return Err(e);
     }
@@ -43,7 +43,7 @@ fn cond_branch(cdr: List, env: &Env) -> Result<Option<Expr>, Error> {
     }
 }
 
-pub(crate) fn cond(cdr: List, env: &Env) -> Result<Expr, Error> {
+pub(crate) fn cond(cdr: List, env: &mut Env) -> Result<Expr, Error> {
     for (i, branch) in cdr.iter().enumerate() {
         match branch {
             Expr::List(ls) => {
@@ -77,6 +77,29 @@ pub(crate) fn lambda(cdr: List, env: &Env) -> Result<Expr, Error> {
         params: params.clone(),
         env: env.clone(),
     }))))
+}
+
+pub(crate) fn defun(cdr: List, env: &mut Env) -> Result<Expr, Error> {
+    if let Err(e) = check_args_count(3, cdr.len()) {
+        return Err(e);
+    }
+
+    let id = cdr.car().clone();
+    let params = cdr.cadr().clone();
+    let body = cdr.cdr().cdr().car().clone();
+
+    let mut f = Expr::Func(Func::Lambda(Box::new(Lambda {
+        body,
+        params,
+        env: env.clone(),
+    })));
+
+    env.insert(&id, &f);
+    if let Expr::Func(Func::Lambda(ref mut l)) = f {
+        l.env = env.clone();
+    }
+
+    Ok(Expr::new_nil())
 }
 
 /* Functions */

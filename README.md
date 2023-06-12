@@ -4,14 +4,17 @@ A Lisp implementation à la [A Micro-Manual for Lisp (John McCarthy)](https://dl
 
 Implemented in Rust with a simple tree-walking interpreter.
 
+Metacircular evaluation works!
+
 ## Primitives
 
 \* denotes special forms.
-- `quote`*
+- `quote`\*
 - `atom`
 - `eq`
 - `car`
 - `cdr`
 - `cons`
-- `cond`*
-- `lambda`*
+- `cond`\*
+- `lambda`\*
+- `defun`\*

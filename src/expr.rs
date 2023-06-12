@@ -103,7 +103,7 @@ pub mod func {
             };
             let mut new_env = env.clone();
             new_env.extend(new_scope);
-            self.body.eval(&new_env)
+            self.body.eval(&mut new_env)
         }
     }
 }

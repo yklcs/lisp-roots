@@ -8,7 +8,7 @@ use crate::{
     primitives,
 };
 
-fn evlis(ls: &List, env: &Env) -> Result<List, Error> {
+fn evlis(ls: &List, env: &mut Env) -> Result<List, Error> {
     let ls_eval = ls
         .iter()
         .map(|x| x.clone().eval(env))
@@ -16,12 +16,13 @@ fn evlis(ls: &List, env: &Env) -> Result<List, Error> {
     Ok(ls_eval)
 }
 
-fn eval_special_form(ls: &List, env: &Env) -> Option<Result<Expr, Error>> {
+fn eval_special_form(ls: &List, env: &mut Env) -> Option<Result<Expr, Error>> {
     match ls.car() {
         Expr::Atom(atom) => match atom.0.as_str() {
             "quote" => Some(primitives::quote(ls.cdr(), env)),
             "cond" => Some(primitives::cond(ls.cdr(), env)),
             "lambda" => Some(primitives::lambda(ls.cdr(), env)),
+            "defun" => Some(primitives::defun(ls.cdr(), env)),
             _ => None,
         },
         _ => None,
@@ -29,8 +30,8 @@ fn eval_special_form(ls: &List, env: &Env) -> Option<Result<Expr, Error>> {
 }
 
 impl Expr {
-    pub fn eval(&self, env: &Env) -> Result<Expr, Error> {
-        println!("{}", self);
+    pub fn eval(&self, env: &mut Env) -> Result<Expr, Error> {
+        // println!("{}", self);
 
         let x = match self {
             Expr::Atom(_) => {
@@ -58,7 +59,7 @@ impl Expr {
                     return Ok(x);
                 }
 
-                println!("REACH {}", ls);
+                // println!("REACH {}", ls);
 
                 // let ls_eval = evlis(ls, env)?;
                 let car_eval = ls.car().eval(env)?;
@@ -68,7 +69,7 @@ impl Expr {
         };
 
         if let Expr::Func(f) = car {
-            println!("calling {} with {}", f, cdr);
+            // println!("calling {} with {}", f, cdr);
             f.call(cdr, env)
         } else {
             Err(Error::EvalError("not a function".to_string()))
