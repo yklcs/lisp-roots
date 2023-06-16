@@ -57,9 +57,6 @@ impl Expr {
                     return Ok(x);
                 }
 
-                // println!("REACH {}", ls);
-
-                // let ls_eval = evlis(ls, env)?;
                 let car_eval = ls.car().eval(env)?;
                 (car_eval, ls.cdr())
             }
@@ -67,12 +64,9 @@ impl Expr {
         };
 
         if let Expr::Func(f) = car {
-            // println!("calling {} with {}", f, cdr);
             f.call(cdr, env)
         } else {
             Err(Error::EvalError("not a function".to_string()))
         }
-
-        // Ok(self)
     }
 }

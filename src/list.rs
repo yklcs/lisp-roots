@@ -1,59 +1,102 @@
-use std::{fmt, slice};
+use std::fmt;
 
 use crate::expr::Expr;
 
 #[derive(Clone, Hash, PartialEq, Eq, Debug)]
-pub struct List(Vec<Expr>);
+pub struct Cons {
+    value: Expr,
+    next: Option<Box<Cons>>,
+}
 
-// pub trait List {
-//     fn push(&mut self, x: Expr);
-//     fn new() -> Self;
-// }
+#[derive(Clone, Hash, PartialEq, Eq, Debug)]
+pub struct List {
+    head: Option<Box<Cons>>,
+    len: usize,
+}
 
 impl List {
     pub fn push(&mut self, x: Expr) {
-        self.0.push(x);
+        let new = Box::new(Cons {
+            value: x,
+            next: None,
+        });
+
+        let mut cur = self.head.as_mut();
+        while let Some(node) = cur {
+            if node.next.is_none() {
+                node.next = Some(new);
+                self.len += 1;
+                return;
+            }
+            cur = node.next.as_mut();
+        }
+
+        self.head = Some(new);
+        self.len = 1;
     }
 
     pub fn car(&self) -> &Expr {
-        &self.0[0]
-    }
-
-    pub fn cadr(&self) -> &Expr {
-        &self.0[1]
+        if let Some(car) = &self.head {
+            &car.value
+        } else {
+            panic!("car on empty list")
+        }
     }
 
     pub fn cdr(&self) -> Self {
-        Self(self.0[1..].to_vec())
+        if let Some(car) = &self.head {
+            List {
+                head: car.next.clone(),
+                len: self.len - 1,
+            }
+        } else {
+            panic!("cdr on empty list")
+        }
     }
 
     pub fn new() -> Self {
-        List(Vec::new())
+        List { head: None, len: 0 }
     }
 
-    pub fn iter(&self) -> slice::Iter<Expr> {
-        self.0.iter()
+    pub fn iter(&self) -> ConsIter {
+        ConsIter(self.head.as_deref())
     }
 
     pub fn is_empty(&self) -> bool {
-        self.0.is_empty()
+        self.head.is_none()
     }
 
     pub fn len(&self) -> usize {
-        self.0.len()
+        self.len
+    }
+}
+
+pub struct ConsIter<'a>(Option<&'a Cons>);
+
+impl<'a> Iterator for ConsIter<'a> {
+    type Item = &'a Expr;
+    fn next(&mut self) -> Option<Self::Item> {
+        self.0.map(|cons| {
+            self.0 = cons.next.as_deref();
+            &cons.value
+        })
     }
 }
 
 impl FromIterator<Expr> for List {
     fn from_iter<T: IntoIterator<Item = Expr>>(iter: T) -> Self {
-        List(iter.into_iter().collect())
+        let mut ls = List::new();
+        for x in iter.into_iter() {
+            ls.push(x);
+        }
+        ls
     }
 }
 
 impl fmt::Display for List {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         if !self.is_empty() && self.car() == &Expr::from("quote") {
-            write!(f, "'{}", self.cadr())
+            write!(f, "'{}", self.cdr().car())
         } else {
             let mut ss = "(".to_string();
             ss.extend(self.iter().map(|l| l.to_string() + " "));
