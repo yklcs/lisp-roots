@@ -1,3 +1,5 @@
+use std::rc::Rc;
+
 use crate::{
     env::Env,
     error::Error,
@@ -71,7 +73,7 @@ pub(crate) fn lambda(cdr: List, env: &Env) -> Result<Expr, Error> {
     Ok(Expr::Func(Func::Lambda(Box::new(Lambda {
         body: body.clone(),
         params: params.clone(),
-        env: env.clone(),
+        env: Rc::new(env.clone()),
     }))))
 }
 
@@ -85,12 +87,12 @@ pub(crate) fn defun(cdr: List, env: &mut Env) -> Result<Expr, Error> {
     let mut f = Expr::Func(Func::Lambda(Box::new(Lambda {
         body,
         params,
-        env: env.clone(),
+        env: Rc::new(env.clone()),
     })));
 
     env.insert(&id, &f);
     if let Expr::Func(Func::Lambda(ref mut l)) = f {
-        l.env = env.clone();
+        l.env = Rc::new(env.clone());
     }
 
     Ok(Expr::new_nil())

@@ -5,7 +5,7 @@ use crate::{env::Env, error::Error, list::List};
 use self::func::Func;
 
 pub mod func {
-    use std::hash::{Hash, Hasher};
+    use std::{hash::{Hash, Hasher}, rc::Rc};
 
     use super::*;
 
@@ -87,7 +87,7 @@ pub mod func {
     pub struct Lambda {
         pub body: Expr,
         pub params: Expr,
-        pub env: Env,
+        pub env: Rc<Env>,
     }
 
     impl Callable for Lambda {
